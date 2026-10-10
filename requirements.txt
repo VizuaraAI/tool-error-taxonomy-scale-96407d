@@ -1,0 +1,35 @@
+# Core measurement path. src/taxonomy.py, src/parsing.py and src/attribution.py
+# are standard library only, so you can read and test the science before any of
+# this is installed:  python -m src.attribution --selftest
+
+# --- inference -------------------------------------------------------------
+torch>=2.5
+transformers>=4.51
+accelerate>=1.2
+datasets>=3.2
+huggingface-hub>=0.27
+sentencepiece>=0.2
+
+# --- constrained decoding (the E7 remedy) ----------------------------------
+xgrammar>=0.1.11
+outlines>=0.1.11
+jsonschema>=4.23
+
+# --- analysis and figures --------------------------------------------------
+numpy>=2.0
+pandas>=2.2
+matplotlib>=3.9
+pyyaml>=6.0
+tqdm>=4.67
+
+# --- optional week 7 LoRA extension (src/train_lora.py) --------------------
+peft>=0.14
+trl>=0.13
+
+# --- tests -----------------------------------------------------------------
+pytest>=8.3
+
+# Not pinned here on purpose: vLLM. It makes the sweep 5-10x faster but its
+# build is fussy. Get the study working with transformers first, then try
+#   pip install vllm
+# and swap ChatModel.generate for an offline vLLM LLM.generate call.

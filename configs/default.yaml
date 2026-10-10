@@ -1,0 +1,59 @@
+# Default experiment configuration.
+#
+# Everything here is a knob the paper has to report. If you change a value,
+# write it in experiments/log.md in the same commit, otherwise you will not be
+# able to reconstruct which config produced which row of Table 1.
+
+# --- what to evaluate ------------------------------------------------------
+benchmark: bfcl          # bfcl | nestful | apibank (see src/data.py SOURCES)
+limit: 200               # instances per run; raise once the pipeline is stable
+out_dir: runs
+
+# --- the controlled scale ladder ------------------------------------------
+# Same family, same post-training recipe, so parameter count is the only
+# variable that moves. This is the core design choice of the study.
+ladder:
+  - "0.5B"
+  - "1.5B"
+  - "3B"
+
+# Cross-family replication. Run this second: it tells you whether the effect
+# is about scale or about tool-use post-training.
+cross_family:
+  - llama-1B
+  - llama-3B
+  - smol-360M
+  - smol-1.7B
+
+# --- generation ------------------------------------------------------------
+# Greedy is the primary condition. Temperature > 0 is a robustness check only.
+max_new_tokens: 512
+temperature: 0.0
+top_p: 1.0
+batch_size: 8
+seeds: [0, 1, 2]
+seed: 0
+
+# --- attribution -----------------------------------------------------------
+# Changing cascade_order changes every number in the paper. It lives in
+# src/taxonomy.py as CASCADE_ORDER; this is a copy for the record only.
+cascade_order:
+  - E7_invalid_formatting
+  - E6_wrong_function_name
+  - E3_wrong_argument_names
+  - E4_wrong_argument_types
+  - E2_wrong_argument_values
+  - E1_insufficient_calls
+  - E5_repeated_calls
+
+# --- remedies --------------------------------------------------------------
+# One per error type. The sweep runs each against each ladder rung to build
+# the remedy-by-scale gain matrix (Table 2, Figure 2b).
+remedies:
+  - grammar_constrained_decoding
+  - tool_doc_retrieval
+  - schema_name_canonicalisation
+  - type_coercion_repair
+  - value_grounding_fewshot
+  - call_set_planning_prompt
+  - duplicate_call_state_tracker
